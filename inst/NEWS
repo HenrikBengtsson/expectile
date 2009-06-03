@@ -1,0 +1,27 @@
+Package: expectile
+==================
+
+Version: 0.2.4 [2008-12-26]
+o BUG FIX: Single-pass skewness calculation was incorrect. This
+  could be the cause for poor convergence with some data sets.
+
+
+Version: 0.2.3 [2008-09-08]
+o Updated the internal native sfit algorithm to fit the
+  simplex/cone with a weighted prior simplex/cone.
+
+
+Version: 0.2.2 [2008-08-31]
+o fitCone() calls fitExpectileCone() as is.
+o Added fitExpectileCone(), which returns an ExpectileCone object.
+o Added points(), lines() and radials() to ExpectileCone.
+
+
+Version: 0.2.1 [2008-08-03]
+o Added loexp(), which previously was in the 'loexp' package.
+o Updated the help page for sfit2 and a fixed a bug in its examples.
+o Package passes R CMD check on R v2.7.1 and R v2.8.0 devel.
+
+
+Version: 0.2.0 [2008-04-12]
+o Created.
