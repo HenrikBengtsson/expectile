@@ -9,8 +9,6 @@
 
  \name{sfit2.matrix}
 \alias{sfit2.matrix}
-\alias{sfit2.matrix}
-
  \alias{sfit2}
  \alias{fitExpectileCone}
  \alias{matrix.fitExpectileCone}
@@ -38,7 +36,11 @@
    \eqn{E} is a PxN \code{\link[base]{matrix}} of noise, all with \eqn{M-1 \leq P}.
  }
 
- \usage{\method{sfit2}{matrix}(y, M=dim(y)[1] + 1, w=rep(1, dim(y)[2]), lambda=2, alpha=0.05, family=c("biweight", "huber", "normal"), robustConst=4.685, tol=0.001, maxIter=60, Rtol=1e-07, priorX=NULL, priorW=NULL, initX=NULL, fitCone=FALSE, verbose=FALSE, ...)}
+ \usage{
+\method{sfit2}{matrix}(y, M=dim(y)[1] + 1, w=rep(1, dim(y)[2]), lambda=2, alpha=0.05,
+  family=c("biweight", "huber", "normal"), robustConst=4.685, tol=0.001, maxIter=60,
+  Rtol=1e-07, priorX=NULL, priorW=NULL, initX=NULL, fitCone=FALSE, verbose=FALSE, ...)
+}
 
  \arguments{
    \item{y}{A PxN \code{\link[base]{matrix}} (or \code{\link[base]{data.frame}}) containing P variables and
@@ -118,6 +120,7 @@ for (withPrior in c(FALSE, TRUE)) {
   if (withPrior) {
     priorX <- matrix(c(a0, 0,0, 0,0), nrow=2, ncol=3)
     priorW <- c(Inf,0,0)
+    priorW <- c(+100,0,0)
     # Fit cone
     fit <- fitCone(y, priorX=priorX, priorW=priorW)
     stopifnot(identical(fit$X[,1], a0))

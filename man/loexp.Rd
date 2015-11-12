@@ -17,7 +17,10 @@
   \eqn{Y = X B + E}, where \eqn{B} is "mostly non-negative".
 }
 
-\usage{loexp(y, w=rep(1, length(y)), sigma=40, polyo=2, alpha=0.5, biweight=4.685, tol=1e-04, maxIter=50)}
+\usage{
+loexp(y, w=rep(1, length(y)), sigma=40, polyo=2, alpha=0.5, biweight=4.685, tol=1e-04,
+  maxIter=50)
+}
 
 \arguments{
  \item{y}{A \code{\link[base]{numeric}} time series \code{\link[base]{vector}} of length T.}
@@ -65,3 +68,5 @@ plot(ex2.y, pch=19, type="b")
 lines(loexp(ex2.y, w=ex2.w, alpha=0.005)$outy, lwd=4, col="blue")
 }
 
+
+\keyword{internal}
