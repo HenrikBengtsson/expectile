@@ -1,3 +1,17 @@
+importFrom("R.methodsS3", "setMethodS3", "throw")
+importFrom("graphics", "lines", "par", "points")
+
 # Export all public methods, that is, those without a preceeding dot
 # in their names.
 exportPattern("^[^\\.]")
+
+
+S3method("fitCone", "matrix")
+S3method("fitExpectileCone", "matrix")
+S3method("fitSimplex", "matrix")
+S3method("sfit2", "matrix")
+
+S3method("drawApex", "ExpectileCone")
+S3method("lines", "ExpectileCone")
+S3method("points", "ExpectileCone")
+S3method("radials", "ExpectileCone")

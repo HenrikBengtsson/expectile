@@ -1,6 +1,10 @@
 Package: expectile
 ==================
 
+Version: 0.3.1 [2015-11-11]
+o ROBUSTNESS: Properly import functions and declaring S3 methods.
+
+
 Version: 0.3.0 [2012-06-22]
 o Now using .onAttach() instead of .First.lib().
 o Now sfit2() passes NA instead of NULL to .C("Rwrapper_sfit0").
