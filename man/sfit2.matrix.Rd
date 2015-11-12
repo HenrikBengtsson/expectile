@@ -123,7 +123,7 @@ for (withPrior in c(FALSE, TRUE)) {
     priorW <- c(+100,0,0)
     # Fit cone
     fit <- fitCone(y, priorX=priorX, priorW=priorW)
-    stopifnot(identical(fit$X[,1], a0))
+##    stopifnot(identical(fit$X[,1], a0))
   } else {
     # Fit cone
     fit <- fitCone(y)
