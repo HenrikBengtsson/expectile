@@ -1,3 +1,5 @@
+useDynLib("expectile")
+
 importFrom("R.methodsS3", "setMethodS3", "throw")
 importFrom("graphics", "lines", "par", "points")
 

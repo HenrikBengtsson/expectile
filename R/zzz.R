@@ -4,9 +4,6 @@
 
 
 .onAttach <- function(libname, pkgname) {
-#.First.lib <- function(libname, pkgname) {
-  library.dynam(pkgname, pkgname, libname, now=FALSE);
-
   pkgD <- utils::packageDescription(pkgname);
   packageStartupMessage(pkgname, " v", pkgD$Version, " (", pkgD$Date, ")",
       " successfully loaded. See ?", pkgname, " for help.\n", sep="");
