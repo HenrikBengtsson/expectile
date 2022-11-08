@@ -71,7 +71,7 @@
 #   They don't necessarily sum to one.
 # } 
 #
-# \examples{@include "..\incl\fitCone.matrix.Rex"}
+# \examples{@include "../incl/fitCone.matrix.Rex"}
 #
 # \author{
 #   Algorithm and native code by Pratyaksha (Asa) Wirapati.
