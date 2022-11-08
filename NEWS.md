@@ -1,3 +1,8 @@
+# Version (development version)
+
+ * ...
+ 
+
 # Version 0.3.1 [2015-11-11]
 
  * Package builds, installs and checks on modern R versions.
