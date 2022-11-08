@@ -48,7 +48,6 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          working-directory: r
           extra-packages: any::rcmdcheck
           needs: check
 
@@ -64,7 +63,6 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           rcmdcheck::rcmdcheck(
-            path = "r",
             args = "--as-cran",
             error_on = "warning",
             check_dir = "check"
@@ -75,7 +73,6 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           rcmdcheck::rcmdcheck(
-            path = "r",
             args = c("--no-manual", "--as-cran"),
             error_on = "warning",
             check_dir = "check"
