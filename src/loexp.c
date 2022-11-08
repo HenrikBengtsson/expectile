@@ -43,7 +43,9 @@ alloc(int n)
 static void
 set_d (int n, double c, double *x)
 {
-  for(int i = 0; i < n; i++ )
+  int i;
+
+  for(i = 0; i < n; i++ )
     x[i] = c;
 }
 
@@ -65,24 +67,25 @@ set_d (int n, double c, double *x)
 static void
 recgauss_filter_col (int n, int m, double *y, int K, double *a)
 {
+  int i, j, k;
   double *yi = y + K*m;
-  for(int i = K; i < n; i++, yi += m )
+  for(i = K; i < n; i++, yi += m )
     {
-    for(int j = 0; j < m; j++ )
+    for(j = 0; j < m; j++ )
       yi[j] *= a[0];
     double *yk = yi - m;
-    for(int k = 1; k <= K; k++, yk -= m )
-      for(int j = 0; j < m; j++ )
+    for(k = 1; k <= K; k++, yk -= m )
+      for(j = 0; j < m; j++ )
         yi[j] -= a[k]*yk[j];
     }
   yi = y + (n-K-1)*m;
-  for(int i = n-K-1; i >= K; i--, yi -= m )
+  for(i = n-K-1; i >= K; i--, yi -= m )
     {
-    for(int j = 0; j < m; j++ )
+    for(j = 0; j < m; j++ )
       yi[j] *= a[0];
     double *yk = yi + m;
-    for(int k = 1; k <= K; k++, yk += m )
-      for(int j = 0; j < m; j++ )
+    for(k = 1; k <= K; k++, yk += m )
+      for(j = 0; j < m; j++ )
         yi[j] -= a[k]*yk[j];
     } 
 }
@@ -560,6 +563,7 @@ loexp (
   const int RIGHT_PAD = 8; // 8*sigma points needed to avoid kernel distortion
   
   const int K = 3;                       // filter coefficients
+  int i, r;
   int nn = K + n + RIGHT_PAD * sigma;
   
   double *workspace = alloc(nn*8 + 3*n); // 8 is # sums in quadratic regression
@@ -583,12 +587,12 @@ loexp (
   
   double RSS = 0, oldRSS = 0.0;
   int return_status = 1;
-  for(int r = 0; r < iter_max; r++ )
+  for(r = 0; r < iter_max; r++ )
     {
 	/* printf("Iteration %d.\n",r); */
     // fill in the LHS-RHS of local regression
     double *s = workspace + 8*K;
-    for(int i = 0; i < n; i++, s += 8 )
+    for(i = 0; i < n; i++, s += 8 )
       {
       double x = 4.0/n * i - 2.0; // polynomial dummy vars
       s[0] = v[i];
@@ -618,7 +622,7 @@ loexp (
     RSS = 0;
     int ineg = 0, ipos = n; // index to negative and positive residuals
     double swneg = 0, swpos = 0;
-    for(int i = 0; i < n; i++, s += 8 )
+    for(i = 0; i < n; i++, s += 8 )
       {
 	  //printf("%d.\n",i);
       double sw = s[0], sx1 = s[1], sx2 = s[2], sx3 = s[3], sx4 = s[4],
@@ -697,7 +701,7 @@ loexp (
     double bwcutpos = biweight
            * wquantile( n-ipos, AR + ipos, wAR + ipos, swpos, swpos/2 )/0.6745;
     
-    for(int i = 0; i < n; i++ )
+    for(i = 0; i < n; i++ )
       {
       double res = v[i];
       if( res < 0 )
@@ -829,6 +833,7 @@ main(int argc, char* argv[])
   char *infile = "-";
   char *outfile = "-";
   int weighted = 0;
+  int i;
   double sigma = 40;
   double alpha = 0.5;
   char *output_weight = 0;
@@ -906,13 +911,13 @@ main(int argc, char* argv[])
   
   if(strcmp("-",outfile) )
     freopen(outfile,"w",stdout);
-  for(int i = 0; i < n; i++ )
+  for(i = 0; i < n; i++ )
     fprintf(stdout, "%g\n",Ey[i]);
 
   if(output_weight)
     {
     freopen(output_weight,"w",stdout);
-    for(int i = 0; i < n; i++ )
+    for(i = 0; i < n; i++ )
       fprintf(stdout, "%g\n",v[i]);
     }
   

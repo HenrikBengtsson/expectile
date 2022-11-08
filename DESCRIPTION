@@ -1,11 +1,10 @@
 Package: expectile
-Version: 0.3.0
-Date: 2012-06-22
-Title: Modelling of expectiles
+Version: 0.3.2
+Depends: R (>= 2.3.0)
+Imports: R.methodsS3 (>= 1.2.2)
+Title: Modelling of Expectiles
 Author: Pratyaksha Wirapati, Henrik Bengtsson, Mark Robinson
 Maintainer: Henrik Bengtsson <henrikb@braju.com>
-Description: This package provides a methods for fitting a simplex or polyhedral cone to multivariate data, for doing expectile regression and skyline/baseline estimation.
+Description: Methods for fitting a simplex or polyhedral cone to multivariate data, for doing expectile regression and skyline/baseline estimation.
 License: LGPL (== 2.1)
-Depends: R (>= 2.3.0), R.methodsS3 (>= 1.2.2)
-Imports: R.methodsS3 (>= 1.2.2)
 LazyLoad: yes

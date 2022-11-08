@@ -136,8 +136,9 @@ wquantile (
 static inline double
 hoho_vector ( int n, double *x )
 {
+  int i;
   double ss = 0;
-  for(int i = 1; i < n; i++ )
+  for(i = 1; i < n; i++ )
     ss += x[i]*x[i];
   if( ss < DBL_MIN )
     return 0;
@@ -150,7 +151,7 @@ hoho_vector ( int n, double *x )
   double tau = 2*a*a/(a*a+ss);
   
   x[0] = normx ;
-  for(int i = 1; i < n; i++ )
+  for(i = 1; i < n; i++ )
     x[i] /= a;
   return tau;
 }
@@ -163,13 +164,15 @@ hoho_vector ( int n, double *x )
 static inline void
 hoho_reflect ( int n, double tau, const double *u, double *x )
 {
+  int j;
+
   if( tau < DBL_MIN ) return;
   double b = x[0];
-  for( int j = 1; j < n; j++ )
+  for(j = 1; j < n; j++ )
     b += u[j] * x[j];
   b *= tau;
   x[0] -= b;
-  for( int j = 1; j < n; j++ )
+  for(j = 1; j < n; j++ )
     x[j] -= b * u[j];
 }
 
@@ -183,15 +186,16 @@ hoho_reflect2 (
   double *x, int dx   /* dx is displacement to the next vector */
   )
 {
+  int i, j;
   if( tau < DBL_MIN ) return;
-  for(int i = 0; i < m; i++, x += dx )
+  for(i = 0; i < m; i++, x += dx )
     {
     double b = x[0];
-    for( int j = 1; j < n; j++ )
+    for(j = 1; j < n; j++ )
       b += u[j] * x[j];
     b *= tau;
     x[0] -= b;
-    for( int j = 1; j < n; j++ )
+    for(j = 1; j < n; j++ )
       x[j] -= b * u[j];
     }
 }
@@ -204,11 +208,13 @@ backsub (
   double tolerance,           // smallest 
   double *b )                 // right-hand-side (overwritten)
 {
+  int i, j;
+
   R += (m-1)*dR;
-  for( int i = m-1; i >= 0; i-- )
+  for(i = m-1; i >= 0; i-- )
     {
     double sum = b[i]; const double *r = R + i;
-    for( int j = m - 1; j > i; j--, r -= dR )
+    for(j = m - 1; j > i; j--, r -= dR )
       sum -= b[j] * r[0];
     if( fabs(r[0]) > tolerance )
       b[i] = sum / r[0];
@@ -229,9 +235,10 @@ initial_simplex (
     double *X         // initial simplex   
     )   
 {
+  int a, i, j, k;
   // permutation matrix for selecting vertices from data points
   int* P = (int*)malloc(sizeof(int)*n);
-  for(int j = 0; j < n; j++ )
+  for(j = 0; j < n; j++ )
     P[j] = j;
   
   // find the mean
@@ -241,22 +248,22 @@ initial_simplex (
   double *Z = mu0 + p;
   double *norm = Z + p*n;
 
-  for(int k = 0; k < p; k++ )
+  for(k = 0; k < p; k++ )
     mu[k] = 0;
   const double *Yj = Y;
-  for(int j = 0; j < n; j++, Yj += p )
-    for(int k = 0; k < p; k++ )
+  for(j = 0; j < n; j++, Yj += p )
+    for(k = 0; k < p; k++ )
       mu[k] += Yj[k];
-  for(int k = 0; k < p; k++ )
+  for(k = 0; k < p; k++ )
     mu[k] /= n;
   
   // find the furthest point from the mean
   int maxj = -1; double maxnorm = 0;
   Yj = Y;
-  for(int j = 0; j < n; j++, Yj += p )
+  for(j = 0; j < n; j++, Yj += p )
     {
     double normj = 0;
-    for(int k = 0; k < p; k++ )
+    for(k = 0; k < p; k++ )
       normj += (Yj[k]-mu[k])*(Yj[k]-mu[k]);
     if( normj > maxnorm )
       { maxnorm = normj; maxj = j; }
@@ -272,21 +279,21 @@ initial_simplex (
   maxj = -1; maxnorm = 0;
   const double *X0 = Y + P[0]*p; 
   double sum = 0;
-  for(int k = 0; k < p; k++ )
+  for(k = 0; k < p; k++ )
     {
     mu0[k] = mu[k] - X0[k];
     sum += mu0[k]*mu0[k];
     }
-  for(int k = 0; k < p; k++ )
+  for(k = 0; k < p; k++ )
     mu0[k] /= sqrt(sum);
 
   double *Zj = Z;
   Yj = Y;
-  for(int j = 0; j < n; j++, Zj += p, Yj += p )
+  for(j = 0; j < n; j++, Zj += p, Yj += p )
     {
     norm[j] = 0;
     sum = 0;
-    for(int k = 0; k < p; k++ )
+    for(k = 0; k < p; k++ )
       {
       Zj[k] = Yj[k] - X0[k];
       norm[j] += Zj[k]*Zj[k];
@@ -298,14 +305,14 @@ initial_simplex (
     }
 
   // QR decomposition with pivoting (depends on maxnorm & maxj above)
-  for(int i = 0; i < m-1; i++ )
+  for(i = 0; i < m-1; i++ )
     {
     int t = P[i+1]; P[i+1] = maxj; P[maxj] = t;
 
     double *zi = Z + maxj*p;
     double tau = hoho_vector( p-i, zi + i );
     maxj = -1; maxnorm = 0;
-    for(int a = i+1; a < n-1; a++ )
+    for(a = i+1; a < n-1; a++ )
       {
       int j = P[a+1];
       Zj = Z + j*p;
@@ -317,27 +324,27 @@ initial_simplex (
       }
     }
   
-  for(int i = 0; i < m; i++ ) // copy and compute the mean
+  for(i = 0; i < m; i++ ) // copy and compute the mean
     {
     double *xi = X + i*p;
     const double *yi = Y + P[i]*p;
-    for(int k = 0; k < p; k++ )
+    for(k = 0; k < p; k++ )
       xi[k] = yi[k];
     }
 
   // find the apex
   double maxskew = -INFINITY; int imaxskew = -1;
-  for(int i = 0; i < m; i++ )
+  for(i = 0; i < m; i++ )
     {
     double *xi = X + i*p;
-    for(int k = 0; k < p; k++ )
+    for(k = 0; k < p; k++ )
       Z[k] = mu[k]-xi[k];
     double N = 0, M1 = 0, M2 = 0, M3 = 0;
     Yj = Y;
-    for(int j = 0; j < n; j++, Yj += p )
+    for(j = 0; j < n; j++, Yj += p )
       {
       double dot = 0;
-      for(int k = 0; k < p; k++ )
+      for(k = 0; k < p; k++ )
         dot += Yj[k]*Z[k];
       update_moment3 ( N, M1, M2, M3, dot, &N, &M1, &M2, &M3 );
       }
@@ -348,16 +355,16 @@ initial_simplex (
     }
     
   // put the apex in X[0]
-  for(int k = 0; k < p; k++ )
+  for(k = 0; k < p; k++ )
     {
     double t = X[k]; X[k] = X[imaxskew*p+k]; X[imaxskew*p+k] = t;
     }
 
   if(shrink > 0 && shrink < 1)
-    for(int i = 0; i < m; i++ )
+    for(i = 0; i < m; i++ )
       {
       double *xi = X + i*p;
-      for(int k = 0; k < p; k++ )
+      for(k = 0; k < p; k++ )
         xi[k] = (1-shrink)*xi[k] + shrink*mu[k];
       }
 
@@ -395,13 +402,15 @@ sfit0 (
                         // of R still used for solving. 
   )
 {
+  int h, i, j, k, r;    // iterators
+
   if( m == 0 || n == 0 || p == 0 ) return 0;
 
   int prior_simplex = 0;
   if( wX0 && X0 )
     {
     double sum_wX0 = 0;
-    for(int i = 0; i < m; i++ )
+    for(i = 0; i < m; i++ )
       {
       if( wX0[i] < 0 ) wX0[i] = 0;
       sum_wX0 += wX0[i];
@@ -412,8 +421,8 @@ sfit0 (
       if( fitcone == 1 ) // add the apex coordinate to the others
         {
         double *X0i = X0+p;
-        for(int i = 1; i < m; i++, X0i += p )
-          for(int j = 0; j < p; j++ )
+        for(i = 1; i < m; i++, X0i += p )
+          for(j = 0; j < p; j++ )
             X0i[j] += X0[j];
         }
       }
@@ -440,13 +449,13 @@ sfit0 (
   if( autoinit )
     initial_simplex( n, p, Y, m, 0.1, X );
     
-  for(int r = 0; r < iter_max; r++ )
+  for(r = 0; r < iter_max; r++ )
     {
     
     // copy and center the current simplex 
     double *Xci = Xc + p + 1, *Xi = X + p;
-    for(int i = 1; i < m; i++, Xci += p+1, Xi += p )
-      for(int k = 0; k < p; k++ )
+    for(i = 1; i < m; i++, Xci += p+1, Xi += p )
+      for(k = 0; k < p; k++ )
         Xci[k+1] = Xi[k] - X[k];
 
     // QR decompose Xc 
@@ -462,7 +471,7 @@ sfit0 (
     // as an indicator of support for vertex i.
     // 
     Xci = Xc + p + 1;
-    for(int i = 1; i < m; i++, Xci += p+1 )
+    for(i = 1; i < m; i++, Xci += p+1 )
       {
       Xci[0] = hoho_vector( p+1-i, Xci+i );
       hoho_reflect2 ( m-1-i, p+1-i, Xci[0], Xci+i, Xci+i+p+1, p+1 );
@@ -472,15 +481,15 @@ sfit0 (
     double sumwneg = 0, sumwbase = 0, sumwe2 = 0;
     double *Ycj = Yc;
     const double *Yj = Y;
-    for(int j = 0; j < n; j++, Ycj += p+1, Yj += p )
+    for(j = 0; j < n; j++, Ycj += p+1, Yj += p )
       {
       // copy original data
-      for(int k = 0; k < p; k++ )
+      for(k = 0; k < p; k++ )
         Ycj[k+1] = Yj[k] - X[k];
       
       // Q' Yc[j]
       Xci = Xc + p + 1;
-      for(int i = 1; i < m; i++, Xci += p+1 )
+      for(i = 1; i < m; i++, Xci += p+1 )
         hoho_reflect ( p+1-i, Xci[0], Xci+i, Ycj+i );
       
       // Solve R beta = Q'Yc[j], overwrite the R part of Yc
@@ -488,13 +497,13 @@ sfit0 (
 
      // satisfy affine condition
       Ycj[0] = 1.0;
-      for(int i = 1; i < m; i++ )
+      for(i = 1; i < m; i++ )
         Ycj[0] -= Ycj[i];
 
       // copy the most negative beta for MAR estimation
       // XXX option to treat beta_1j differently? (first vertex is an apex)
       double v = 0; int iv = -1;
-      for(int i = 0; i < m; i++ )
+      for(i = 0; i < m; i++ )
         if( Ycj[i] < 0 && Ycj[i] < v )
           { v = Ycj[i]; iv = i; }
 
@@ -520,7 +529,7 @@ sfit0 (
       if( p > m-1 )
         {
         double e = Ycj[m]*Ycj[m];
-        for(int k = m+1; k <= p; k++ )
+        for(k = m+1; k <= p; k++ )
           e += Ycj[k]*Ycj[k];
         Ycj[m] = sqrt(e);
         e2[j] = Ycj[m];
@@ -544,30 +553,30 @@ sfit0 (
     //
     // accumulate vertex nudge and residual twist
     //
-    for(int i = 0; i < m*m; i++ )
+    for(i = 0; i < m*m; i++ )
       D[i] = sum_Wd[i] = 0;
-    for(int i = 0; i < m; i++ )
+    for(i = 0; i < m; i++ )
       sum_We[i] = 0;
-    for(int i = 0; i < m*p; i++ ) // overwrite by new X, use p as offset!
+    for(i = 0; i < m*p; i++ ) // overwrite by new X, use p as offset!
       Xc[i] = 0;
     
     Ycj = Yc;
-    for(int j = 0; j < n; j++, Ycj += p+1 )
+    for(j = 0; j < n; j++, Ycj += p+1 )
       {
       double *beta = Ycj;
       
       // vertex proximity weight
       double G[m], sum = 0;
-      for(int i = 0; i < m; i++ )
+      for(i = 0; i < m; i++ )
         {
         G[i] = (beta[i] >= 1 ? 1: (beta[i] <= 0 ? 0: pow(beta[i],lambda)));
         sum += G[i];
         }
 
-      for(int i = 0; i < m; i++ )
+      for(i = 0; i < m; i++ )
         G[i] /= sum;
 
-      for(int k = 0; k < m; k++ )
+      for(k = 0; k < m; k++ )
         {
         double rpar = (fitcone && k == 0 ? bwbase: bwbeta );
         double u = 1;
@@ -587,7 +596,7 @@ sfit0 (
           
         u *= (beta[k] <= 0 ? 1 - alpha : alpha ); // asymmetry
         u *= (w ? w[j]: 1);                       // observation
-        for(int i = 0; i < m; i++ )
+        for(i = 0; i < m; i++ )
           {
           if( i == k ) continue;
           D[i*m+k] += u * G[i] * beta[k];
@@ -598,11 +607,11 @@ sfit0 (
       if( p > m-1 ) // accumulate residual
         {
         Yj = Y + j*p;
-        for(int k = 0; k < p; k++ )
+        for(k = 0; k < p; k++ )
           ej[k] = Yj[k];
         Xi = X;
-        for(int i = 0; i < m; i++, Xi += p )
-          for(int k = 0; k < p; k++ )
+        for(i = 0; i < m; i++, Xi += p )
+          for(k = 0; k < p; k++ )
             ej[k] -= beta[i] * Xi[k];
         
         double u = 1;
@@ -622,21 +631,21 @@ sfit0 (
         u *= (w? w[j] : 1); // observation
         
         Xci = Xc;
-        for(int i = 0; i < m; i++, Xci += p )
+        for(i = 0; i < m; i++, Xci += p )
           {
           double v = u * G[i];
           sum_We[i] += v;
-          for(int k = 0; k < p; k++ )
+          for(k = 0; k < p; k++ )
             Xci[k] += v * ej[k];
           }
         }
       }
 
     // solve vertex nudge
-    for(int i = 0; i < m; i++ )
+    for(i = 0; i < m; i++ )
       {
       double sum = 0;
-      for(int k = 0; k < m; k++ )
+      for(k = 0; k < m; k++ )
         {
         if( k == i ) continue;
         if( sum_Wd[i*m+k] > 0 )
@@ -650,19 +659,19 @@ sfit0 (
     if( p > m-1 )
       {
       Xci = Xc;
-      for(int i = 0; i < m; i++, Xci += p )
-        for(int k = 0; k < p; k++ )
+      for(i = 0; i < m; i++, Xci += p )
+        for(k = 0; k < p; k++ )
           if(sum_We[i] > 0 )
             Xci[k] /= sum_We[i];
       }
 
     // add vertex nudge
     Xci = Xc;
-    for(int i = 0; i < m; i++, Xci += p )
+    for(i = 0; i < m; i++, Xci += p )
       {
       double *Xk = X;
-      for(int k = 0; k < m; k++, Xk += p )
-        for(int h = 0; h < p; h++ )
+      for(k = 0; k < m; k++, Xk += p )
+        for(h = 0; h < p; h++ )
           Xci[h] += D[i*m+k] * Xk[h];
       }
 
@@ -670,17 +679,17 @@ sfit0 (
       {
       Xci = Xc;
       double *X0i = X0;
-      for(int i = 0; i < m; i++, Xci += p, X0i += p )
+      for(i = 0; i < m; i++, Xci += p, X0i += p )
         {
         if( wX0[i] > 0 )
           {
           if( wX0[i] <= DBL_MAX ) // finite weight
-            for(int h = 0; h < p; h++ )
+            for(h = 0; h < p; h++ )
               {
               Xci[h] = (Xci[h] + wX0[i]*X0i[h])/(1.0+wX0[i]);
               }
           else
-            for(int h = 0; h < p; h++ )
+            for(h = 0; h < p; h++ )
               Xci[h] = X0i[h];
            }
         }
@@ -688,7 +697,7 @@ sfit0 (
 
     // copy Xc to X, and compute the norm of the difference
     double DX_F = 0, X_F = 0;
-    for(int i = 0; i < m*p; i++ )
+    for(i = 0; i < m*p; i++ )
       {
       double f = X[i] - Xc[i];
       DX_F += f*f;
@@ -704,8 +713,8 @@ sfit0 (
   if(Beta)
     {
     double *beta_j = Beta, *Ycj = Yc;
-    for(int j = 0; j < n; j++, beta_j += m, Ycj += p+1 )
-      for(int i = 0; i < m; i++ )
+    for(j = 0; j < n; j++, beta_j += m, Ycj += p+1 )
+      for(i = 0; i < m; i++ )
         beta_j[i] = Ycj[i];
     }
 
@@ -713,23 +722,23 @@ sfit0 (
     {
     double *Xi = X + p;
     double *norm = Xc;
-    for(int i = 1; i < m; i++, Xi += p )
+    for(i = 1; i < m; i++, Xi += p )
       {
       norm[i] = 0;
-      for(int k = 0; k < p; k++ )
+      for(k = 0; k < p; k++ )
         {
         Xi[k] -= X[k];  
         norm[i] += Xi[k]*Xi[k];
         }
       norm[i] = sqrt(norm[i]);
-      for(int k = 0; k < p; k++ )
+      for(k = 0; k < p; k++ )
         Xi[k] /= norm[i];
       }
     double *beta_j = Beta;
-    for(int j = 0; j < n; j++, beta_j += m )
+    for(j = 0; j < n; j++, beta_j += m )
       {
       beta_j[0] = 1.0;
-      for(int i = 1; i < m; i++ )
+      for(i = 1; i < m; i++ )
         beta_j[i] *= norm[i];
       }
     }
