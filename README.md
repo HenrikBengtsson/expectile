@@ -8,4 +8,17 @@ The **expectile** package is _neither_ on CRAN nor on Bioconductor.  To install 
 install.packages("expectile", repos = "https://henrikbengtsson.r-universe.dev")
 ```
 
-This installs the package from source, which requires proper build tools.
+This will install the package from source.
+
+
+
+### Pre-release version
+ 
+To install the pre-release version that is available in Git branch `develop` on GitHub, use:
+
+```r
+remotes::install_github("HenrikBengtsson/aroma.core", ref="develop")
+```
+
+This will install the package from source.
+
